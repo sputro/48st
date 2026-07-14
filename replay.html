@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Replay — 48ST Fan Hub</title>
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .stream-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+  @media (min-width: 640px) { .stream-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .stream-grid { grid-template-columns: repeat(3, 1fr); } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="/assets/logo.png" alt="48ST Fan Hub" class="brand-logo">
+    <h1>48ST <span class="accent">Fan Hub</span></h1>
+  </div>
+  <nav class="nav-links">
+    <a href="index.html"><i class="fa-solid fa-newspaper"></i> News</a>
+    <a href="jadwal.html"><i class="fa-solid fa-video"></i> Live Stream</a>
+    <a href="replay.html" class="active"><i class="fa-solid fa-clock-rotate-left"></i> Replay</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Profil</a>
+  </nav>
+  <div class="actions">
+    <img id="topbar-avatar" class="avatar" src="assets/profile/1.png" alt="avatar" style="display:none;">
+    <a href="login.html" id="topbar-login" class="btn btn-outline" style="padding:9px 18px;font-size:13.5px;">
+      <i class="fa-solid fa-right-to-bracket"></i> Masuk
+    </a>
+  </div>
+</header>
+
+<section class="section" style="padding-bottom:0;">
+  <div class="section-head">
+    <h3><i class="fa-solid fa-clock-rotate-left" style="font-size:15px;margin-right:6px;"></i>Arsip Replay Show</h3>
+  </div>
+
+  <div class="filters" style="padding:0 0 16px;">
+    <select id="filter-month">
+      <option value="">Semua Bulan</option>
+      <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
+      <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
+      <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
+      <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+    </select>
+    <select id="filter-year"><option value="">Semua Tahun</option></select>
+  </div>
+
+  <div id="stream-grid" class="stream-grid">
+    <div class="stream-card"><div class="poster skeleton" style="height:190px;"></div></div>
+    <div class="stream-card"><div class="poster skeleton" style="height:190px;"></div></div>
+    <div class="stream-card"><div class="poster skeleton" style="height:190px;"></div></div>
+  </div>
+
+  <div style="text-align:center; margin-top:8px;">
+    <button class="btn btn-outline" id="load-more" style="display:none;">Muat Lebih Banyak</button>
+  </div>
+</section>
+
+<nav class="bottom-nav">
+  <a href="index.html"><i class="fa-solid fa-newspaper"></i>News</a>
+  <a href="jadwal.html"><i class="fa-solid fa-video"></i>Live</a>
+  <a href="replay.html" class="active"><i class="fa-solid fa-clock-rotate-left"></i>Replay</a>
+  <a href="profile.html"><i class="fa-solid fa-user"></i>Profil</a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/replay.js"></script>
+</body>
+</html>

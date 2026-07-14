@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>48ST Fan Hub - Show & Replay JKT48</title>
+
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="/assets/logo.png" alt="48ST Fan Hub" class="brand-logo">
+    <h1>48ST <span class="accent">Fan Hub</span></h1>
+  </div>
+
+  <!-- Desktop-only inline nav (hidden on mobile, see @media in style.css) -->
+  <nav class="nav-links">
+    <a href="index.html" class="active"><i class="fa-solid fa-newspaper"></i> News</a>
+    <a href="jadwal.html"><i class="fa-solid fa-video"></i> Live Stream</a>
+    <a href="replay.html"><i class="fa-solid fa-clock-rotate-left"></i> Replay</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Profil</a>
+  </nav>
+
+  <div class="actions">
+    <a href="login.html" class="btn btn-outline" style="padding:9px 18px;font-size:13.5px;">
+      <i class="fa-solid fa-right-to-bracket"></i> Masuk
+    </a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="eyebrow">Fan Hub Tidak Resmi JKT48</div>
+    <h2>Berita, jadwal show, live stream JKT48, dan arsip show theater dalam satu tempat.</h2>
+    <p>Pantau show teater terbaru, baca berita seputar member, lalu masuk untuk nonton live stream &amp; replay.</p>
+    <div class="hero-actions">
+      <a href="register.html" class="btn btn-primary">
+        <i class="fa-solid fa-user-plus"></i> Daftar Gratis
+      </a>
+      <a href="login.html" class="btn btn-outline">
+        <i class="fa-solid fa-arrow-right"></i> Sudah Punya Akun
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h3><i class="fa-solid fa-newspaper" style="font-size:15px;margin-right:6px;"></i>JKT48 News</h3>
+    <a href="news.html" class="see-all">Semua →</a>
+  </div>
+  <div id="news-scroll" class="news-scroll">
+    <div class="news-card"><div class="thumb skeleton" style="height:130px;"></div></div>
+    <div class="news-card"><div class="thumb skeleton" style="height:130px;"></div></div>
+    <div class="news-card"><div class="thumb skeleton" style="height:130px;"></div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h3><i class="fa-solid fa-calendar-days" style="font-size:15px;margin-right:6px;"></i>Jadwal Show</h3>
+    <a href="jadwal.html" class="see-all">Semua →</a>
+  </div>
+  <div id="schedule-list" class="schedule-list-grid">
+    <div class="schedule-card"><div class="skeleton" style="width:56px;height:56px;"></div></div>
+    <div class="schedule-card"><div class="skeleton" style="width:56px;height:56px;"></div></div>
+  </div>
+</section>
+
+<!-- Mobile bottom nav — mirrors the desktop nav-links above, hidden ≥1024px -->
+<nav class="bottom-nav">
+  <a href="index.html" class="active">
+    <i class="fa-solid fa-newspaper"></i>
+    News
+  </a>
+  <a href="jadwal.html">
+    <i class="fa-solid fa-video"></i>
+    Live
+  </a>
+  <a href="replay.html">
+    <i class="fa-solid fa-clock-rotate-left"></i>
+    Replay
+  </a>
+  <a href="profile.html">
+    <i class="fa-solid fa-user"></i>
+    Profil
+  </a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>

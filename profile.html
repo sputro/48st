@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil Saya — 48ST Fan Hub</title>
+
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="/assets/logo.png" alt="48ST Fan Hub" class="brand-logo">
+    <h1>48ST <span class="accent">Fan Hub</span></h1>
+  </div>
+
+  <nav class="nav-links">
+    <a href="index.html"><i class="fa-solid fa-newspaper"></i> News</a>
+    <a href="jadwal.html"><i class="fa-solid fa-video"></i> Live Stream</a>
+    <a href="replay.html"><i class="fa-solid fa-clock-rotate-left"></i> Replay</a>
+    <a href="profile.html" class="active"><i class="fa-solid fa-user"></i> Profil</a>
+  </nav>
+
+  <div class="actions">
+    <img id="topbar-avatar" class="avatar" src="assets/profile/1.png" alt="avatar">
+  </div>
+</header>
+
+<!-- Profile identity -->
+<section class="profile-header">
+  <div class="avatar-wrap">
+    <img id="profile-avatar" class="avatar-lg" src="assets/profile/1.png" alt="avatar">
+    <button class="avatar-edit-btn" id="open-avatar-picker" aria-label="Ganti foto profil">
+      <i class="fa-solid fa-pen"></i>
+    </button>
+  </div>
+  <div>
+    <h2 id="profile-name">Memuat...</h2>
+    <div class="email" id="profile-email"></div>
+  </div>
+</section>
+
+<!-- Wallet -->
+<section class="wallet-card">
+  <div class="inner">
+    <div class="label"><i class="fa-solid fa-wallet"></i> Saldo Dompet</div>
+    <div class="balance" id="wallet-balance">Rp 0</div>
+    <div class="actions">
+      <button class="btn-wallet primary" id="btn-topup"><i class="fa-solid fa-plus"></i> Top Up</button>
+      <button class="btn-wallet" id="btn-history"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat</button>
+    </div>
+  </div>
+</section>
+
+<!-- Account settings -->
+<section class="settings-section">
+  <h3>Akun</h3>
+  <div class="settings-list">
+    <div class="settings-row clickable" id="row-edit-name">
+      <div class="row-left"><i class="fa-solid fa-user-pen"></i> Ganti Nama</div>
+      <div class="row-right"><span id="current-username">-</span> <i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+    <div class="inline-form" id="form-edit-name" style="display:none;">
+      <div class="field">
+        <label for="input-username">Nama Tampilan</label>
+        <input type="text" id="input-username" maxlength="20" placeholder="Nama baru">
+      </div>
+      <button class="btn btn-primary btn-block" id="save-name">Simpan Nama</button>
+    </div>
+
+    <div class="settings-row clickable" id="row-edit-password">
+      <div class="row-left"><i class="fa-solid fa-lock"></i> Ganti Password</div>
+      <div class="row-right"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+    <div class="inline-form" id="form-edit-password" style="display:none;">
+      <div class="field">
+        <label for="input-new-password">Password Baru</label>
+        <input type="password" id="input-new-password" minlength="8" placeholder="Minimal 8 karakter">
+      </div>
+      <div class="field">
+        <label for="input-confirm-password">Konfirmasi Password</label>
+        <input type="password" id="input-confirm-password" minlength="8" placeholder="Ulangi password baru">
+      </div>
+      <button class="btn btn-primary btn-block" id="save-password">Simpan Password</button>
+    </div>
+  </div>
+
+  <div id="settings-msg" class="form-msg"></div>
+
+  <h3>Lainnya</h3>
+  <div class="settings-list">
+    <div class="settings-row clickable" id="row-topup-history">
+      <div class="row-left"><i class="fa-solid fa-ticket"></i> Tiket / Akses Saya</div>
+      <div class="row-right"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+    <div class="settings-row clickable danger" id="row-logout">
+      <div class="row-left"><i class="fa-solid fa-right-from-bracket"></i> Keluar</div>
+      <div class="row-right"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- Avatar picker modal -->
+<div class="modal-overlay" id="avatar-modal" style="display:none;">
+  <div class="modal-sheet">
+    <h4>Pilih Foto Profil <button class="close-btn" id="close-avatar-picker"><i class="fa-solid fa-xmark"></i></button></h4>
+    <div class="avatar-grid" id="avatar-grid"><!-- filled by profile.js: 1.png ... 10.png --></div>
+  </div>
+</div>
+
+<!-- Mobile bottom nav -->
+<nav class="bottom-nav">
+  <a href="index.html"><i class="fa-solid fa-newspaper"></i>News</a>
+  <a href="jadwal.html"><i class="fa-solid fa-video"></i>Live</a>
+  <a href="replay.html"><i class="fa-solid fa-clock-rotate-left"></i>Replay</a>
+  <a href="profile.html" class="active"><i class="fa-solid fa-user"></i>Profil</a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/profile.js"></script>
+</body>
+</html>

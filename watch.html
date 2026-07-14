@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nonton — 48ST Fan Hub</title>
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .player-wrap { max-width: 900px; margin: 0 auto; padding: 20px; }
+  .player-box { position: relative; background: #000; border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 16/9; }
+  .player-box video { width: 100%; height: 100%; object-fit: contain; }
+  .player-state { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; flex-direction: column; gap: 10px; }
+  .watermark { position: absolute; bottom: 10px; right: 14px; color: rgba(255,255,255,.55); font-size: 11px; pointer-events: none; z-index: 2; }
+  .player-title { margin: 16px 0 4px; font-family: var(--font-display); font-size: 19px; }
+  .player-meta { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="/assets/logo.png" alt="48ST Fan Hub" class="brand-logo">
+    <h1>48ST <span class="accent">Fan Hub</span></h1>
+  </div>
+  <nav class="nav-links">
+    <a href="index.html"><i class="fa-solid fa-newspaper"></i> News</a>
+    <a href="jadwal.html"><i class="fa-solid fa-video"></i> Live Stream</a>
+    <a href="replay.html"><i class="fa-solid fa-clock-rotate-left"></i> Replay</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Profil</a>
+  </nav>
+  <div class="actions">
+    <img id="topbar-avatar" class="avatar" src="assets/profile/1.png" alt="avatar">
+  </div>
+</header>
+
+<div class="player-wrap">
+  <div class="player-box" id="player-box">
+    <div class="player-state" id="player-state"><i class="fa-solid fa-spinner fa-spin"></i> Menyiapkan video...</div>
+  </div>
+  <h2 class="player-title" id="video-title">Memuat...</h2>
+  <div class="player-meta" id="video-meta"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html"><i class="fa-solid fa-newspaper"></i>News</a>
+  <a href="jadwal.html"><i class="fa-solid fa-video"></i>Live</a>
+  <a href="replay.html"><i class="fa-solid fa-clock-rotate-left"></i>Replay</a>
+  <a href="profile.html"><i class="fa-solid fa-user"></i>Profil</a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/watch.js"></script>
+</body>
+</html>

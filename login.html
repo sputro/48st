@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masuk — 48ST Fan Hub</title>
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="logo"><img src="/assets/logo.png" alt="48ST Fan Hub" style="height:36px;"></div>
+    <h2>Masuk ke akunmu</h2>
+
+    <div id="msg" class="form-msg"></div>
+
+    <form id="login-form">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="email" placeholder="nama@email.com">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
+        <i class="fa-solid fa-right-to-bracket"></i> Masuk
+      </button>
+    </form>
+
+    <div class="auth-switch">Belum punya akun? <a href="register.html">Daftar sekarang</a></div>
+    <div class="auth-switch">Punya token akses? <a href="token-login.html">Masuk pakai token</a></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
