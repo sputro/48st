@@ -1,27 +1,37 @@
 // Supabase Edge Function: scrape-jkt48
-// Deploy: supabase functions deploy scrape-jkt48
-// Schedule via Supabase Dashboard > Edge Functions > Cron (e.g. every 30 minutes).
+// Deploy: supabase functions deploy scrape-jkt48 --no-verify-jwt
+// Schedule via Supabase Dashboard > Edge Functions > Cron (e.g. every hour).
 //
-// Source: https://setlistjkt48.com/news — an unofficial JKT48 fan aggregator site
-// (not jkt48.com directly). Its markup was confirmed from a real page-source dump,
-// so the selectors below are accurate as of when that dump was taken. If the site
-// changes its HTML later, only this file needs updating.
+// SOURCE: jkt48.com's own internal JSON API (confirmed via a real HAR network
+// capture from the site — not guessed). The site itself is a Nuxt.js app that
+// fetches its news from here client-side, so we call the same endpoint directly
+// instead of scraping rendered HTML (which is empty/JS-only on first load and
+// would need a headless browser to render — much more fragile).
 //
-// Real markup structure (confirmed):
-//   <a href="https://jkt48.com/news/xxx" class="news-item">
-//     <div class="news-content"><div>
-//       <div class="news-title">
-//         Title text here
-//         <div class="news-meta">
-//           <span class="news-badge">Category</span>
-//           &nbsp;
-//           23 Jun 2026
-//         </div>
-//       </div>
-//     </div></div>
-//   </a>
-// No article image is present in the news list markup, so image_url is left blank
-// (news.html/landing.js already fall back to a placeholder when image_url is empty).
+//   GET https://jkt48.com/api/v1/news?lang=id&limit=20
+//
+// Confirmed response shape:
+// {
+//   "message": "Berhasil mendapatkan data",
+//   "status": true,
+//   "data": [
+//     {
+//       "title": "...",
+//       "category": "Theater",
+//       "link": "pengumuman-mengenai-xxx",       <- slug, needs /news/ prefix
+//       "background_image": "" | "https://...",   <- often empty in the list endpoint
+//       "valid_date_from": "2026-07-13T17:00:00.000Z",
+//       "news_id": 1846
+//     },
+//     ...
+//   ],
+//   "_meta": { "page": 1, "limit_per_page": 20, "total_page": ..., "count_total": 1832 }
+// }
+//
+// No HTML parsing, no CSS selectors, no deno_dom dependency needed — just JSON.
+// This should be far more reliable than the previous HTML-scraping approach,
+// since it will only break if jkt48.com changes their API response shape
+// (much rarer than them changing CSS classes/markup).
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -29,64 +39,34 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-const MONTHS: Record<string, number> = {
-  jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-  jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
-};
-
-function parseNewsDate(text: string): string {
-  // e.g. "23 Jun 2026" -> ISO timestamp. Falls back to now() if unparseable.
-  const m = text.match(/(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/);
-  if (!m) return new Date().toISOString();
-  const [, day, monAbbr, year] = m;
-  const month = MONTHS[monAbbr.toLowerCase()];
-  if (month === undefined) return new Date().toISOString();
-  return new Date(Number(year), month, Number(day)).toISOString();
-}
-
 Deno.serve(async (_req) => {
   try {
-    const res = await fetch("https://setlistjkt48.com/news");
-    const html = await res.text();
+    const res = await fetch("https://jkt48.com/api/v1/news?lang=id&limit=20", {
+      headers: {
+        // Some APIs behind a JS-app frontend reject requests without a normal
+        // browser-like User-Agent / Accept header — set them defensively.
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; 48STFanHubBot/1.0)",
+      },
+    });
 
-    const { DOMParser } = await import("https://deno.land/x/deno_dom/deno-dom-wasm.ts");
-    const doc = new DOMParser().parseFromString(html, "text/html");
+    if (!res.ok) {
+      return new Response(JSON.stringify({ ok: false, error: `jkt48.com API returned ${res.status}` }), { status: 502 });
+    }
 
-    const items = [...(doc?.querySelectorAll("a.news-item") ?? [])];
+    const json = await res.json();
+    const items = Array.isArray(json?.data) ? json.data : [];
 
-    const newsItems = items.map((el: any) => {
-      const href = el.getAttribute("href") || "";
-
-      const titleEl = el.querySelector(".news-title");
-      // The title text sits directly inside .news-title, with the .news-meta
-      // block nested right after it — so take only the direct text nodes,
-      // not the nested meta text, to avoid grabbing the category/date too.
-      let title = "";
-      if (titleEl) {
-        title = [...titleEl.childNodes]
-          .filter((n: any) => n.nodeType === 3) // TEXT_NODE
-          .map((n: any) => n.textContent)
-          .join(" ")
-          .replace(/\s+/g, " ")
-          .trim();
-      }
-
-      const badgeEl = el.querySelector(".news-badge");
-      const category = badgeEl ? badgeEl.textContent.trim() : "Berita";
-
-      const metaEl = el.querySelector(".news-meta");
-      const metaText = metaEl ? metaEl.textContent : "";
-      const published_at = parseNewsDate(metaText);
-
-      return {
-        title,
+    const newsItems = items
+      .map((n: any) => ({
+        title: n.title?.trim() || "",
         excerpt: "",
-        image_url: "",
-        category,
-        source_url: href,
-        published_at,
-      };
-    }).filter((n) => n.title && n.source_url);
+        image_url: n.background_image || "",
+        category: n.category || "Berita",
+        source_url: n.link ? `https://jkt48.com/news/${n.link}` : "",
+        published_at: n.valid_date_from || new Date().toISOString(),
+      }))
+      .filter((n) => n.title && n.source_url);
 
     if (newsItems.length) {
       await supabase.from("news").upsert(newsItems, { onConflict: "source_url" });
