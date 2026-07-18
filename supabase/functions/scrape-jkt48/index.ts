@@ -33,31 +33,57 @@
 // since it will only break if jkt48.com changes their API response shape
 // (much rarer than them changing CSS classes/markup).
 
+// Query params (all optional):
+//   ?limit=50      -> items per page requested from jkt48.com (default 50)
+//   ?maxPages=5     -> how many pages to walk through in one run (default 5)
+//   ?startPage=1    -> which page to start from (default 1)
+//
+// To backfill ALL ~1800+ old news once, call this manually several times with
+// increasing startPage (e.g. startPage=1, then startPage=21, then startPage=41...
+// with limit=50 each covers 50 articles per call), since a single Edge Function
+// invocation has a time limit and pulling everything in one shot risks timing out.
+// Regular cron runs can just use the defaults (latest 5 pages / 250 items) to stay
+// current without needing to re-walk the whole history each time.
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-Deno.serve(async (_req) => {
+Deno.serve(async (req) => {
   try {
-    const res = await fetch("https://jkt48.com/api/v1/news?lang=id&limit=20", {
-      headers: {
-        // Some APIs behind a JS-app frontend reject requests without a normal
-        // browser-like User-Agent / Accept header — set them defensively.
-        "Accept": "application/json",
-        "User-Agent": "Mozilla/5.0 (compatible; 48STFanHubBot/1.0)",
-      },
-    });
+    const url = new URL(req.url);
+    const limit = Number(url.searchParams.get("limit") || "50");
+    const maxPages = Number(url.searchParams.get("maxPages") || "5");
+    const startPage = Number(url.searchParams.get("startPage") || "1");
 
-    if (!res.ok) {
-      return new Response(JSON.stringify({ ok: false, error: `jkt48.com API returned ${res.status}` }), { status: 502 });
+    let allItems: any[] = [];
+    let pagesFetched = 0;
+
+    for (let page = startPage; page < startPage + maxPages; page++) {
+      const res = await fetch(`https://jkt48.com/api/v1/news?lang=id&limit=${limit}&page=${page}`, {
+        headers: {
+          "Accept": "application/json",
+          "User-Agent": "Mozilla/5.0 (compatible; 48STFanHubBot/1.0)",
+        },
+      });
+
+      if (!res.ok) break; // stop walking pages on first failure, keep what we already have
+
+      const json = await res.json();
+      const items = Array.isArray(json?.data) ? json.data : [];
+      pagesFetched++;
+
+      if (items.length === 0) break; // reached the end of available pages
+
+      allItems = allItems.concat(items);
+
+      const totalPages = json?._meta?.total_page;
+      if (totalPages && page >= totalPages) break; // reached the last real page
     }
 
-    const json = await res.json();
-    const items = Array.isArray(json?.data) ? json.data : [];
-
-    const newsItems = items
+    const newsItems = allItems
       .map((n: any) => ({
         title: n.title?.trim() || "",
         excerpt: "",
@@ -68,11 +94,25 @@ Deno.serve(async (_req) => {
       }))
       .filter((n) => n.title && n.source_url);
 
-    if (newsItems.length) {
-      await supabase.from("news").upsert(newsItems, { onConflict: "source_url" });
+    if (newsItems.length === 0) {
+      return new Response(JSON.stringify({ ok: true, news: 0, pagesFetched, note: "No items found for this page range" }), {
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
-    return new Response(JSON.stringify({ ok: true, news: newsItems.length }), {
+    const { error: dbError, data: dbData } = await supabase
+      .from("news")
+      .upsert(newsItems, { onConflict: "source_url" })
+      .select();
+
+    if (dbError) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Supabase insert failed: " + dbError.message, attempted: newsItems.length }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    return new Response(JSON.stringify({ ok: true, news: dbData?.length ?? newsItems.length, pagesFetched }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {

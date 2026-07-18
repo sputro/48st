@@ -133,22 +133,27 @@ button { font-family: inherit; cursor: pointer; }
 .section-head .see-all { font-size: 13.5px; font-weight: 600; color: var(--red); display: inline-flex; align-items: center; gap: 4px; }
 .section-head .see-all:hover { text-decoration: underline; }
 
-/* ---------- News cards ---------- */
+/* ---------- News cards (text-only, no thumbnail) ---------- */
 .news-scroll { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
 .news-scroll::-webkit-scrollbar { display: none; }
 .news-card {
-  flex: 0 0 250px; background: var(--card); border-radius: var(--radius-md);
+  flex: 0 0 260px; background: var(--card); border-radius: var(--radius-md);
   overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line);
+  border-left: 4px solid var(--red);
   transition: transform .18s ease, box-shadow .18s ease;
+  display: flex; flex-direction: column;
 }
 @media (hover: hover) {
   .news-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 }
-.news-card .thumb { height: 130px; width: 100%; object-fit: cover; background: var(--line); }
-.news-card .body { padding: 12px 14px 16px; }
+.news-card .body { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
 .news-card .tag { font-size: 11px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: .04em; }
-.news-card h4 { font-size: 14.5px; margin: 6px 0 4px; line-height: 1.35; }
-.news-card .date { font-size: 12px; color: var(--muted); }
+.news-card h4 {
+  font-size: 15px; margin: 0; line-height: 1.4; color: var(--ink);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.news-card .date { font-size: 12px; color: var(--muted); margin-top: auto; padding-top: 6px; }
+.news-card .date::before { content: "🗓 "; }
 
 /* ---------- Schedule list ---------- */
 .schedule-card {

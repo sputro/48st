@@ -25,7 +25,6 @@ async function loadNews(append = false) {
 
   const html = data.map(n => `
     <a class="news-card" href="${n.source_url ? escapeHtml(n.source_url) : '#'}" target="_blank" rel="noopener">
-      <img class="thumb" src="${n.image_url || 'assets/placeholder-news.jpg'}" alt="">
       <div class="body">
         <div class="tag">${escapeHtml(n.category || 'Berita')}</div>
         <h4>${escapeHtml(n.title)}</h4>
