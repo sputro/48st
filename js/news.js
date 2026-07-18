@@ -8,6 +8,10 @@ let offset = 0;
 
 async function loadNews(append = false) {
   const el = document.getElementById("news-grid");
+  const loadMoreBtn = document.getElementById("load-more");
+  loadMoreBtn.disabled = true;
+  loadMoreBtn.textContent = "Memuat...";
+
   const { data, error } = await sb
     .from("news")
     .select("*")
@@ -16,10 +20,12 @@ async function loadNews(append = false) {
 
   if (error) {
     el.innerHTML = `<div class="empty-state">Gagal memuat berita.</div>`;
+    loadMoreBtn.style.display = "none";
     return;
   }
   if (!data || data.length === 0) {
     if (!append) el.innerHTML = `<div class="empty-state">Belum ada berita.</div>`;
+    loadMoreBtn.style.display = "none";
     return;
   }
 
@@ -34,6 +40,11 @@ async function loadNews(append = false) {
 
   el.innerHTML = append ? el.innerHTML + html : html;
   offset += data.length;
+
+  loadMoreBtn.disabled = false;
+  loadMoreBtn.textContent = "Muat Lebih Banyak";
+  loadMoreBtn.style.display = data.length === PAGE_SIZE ? "inline-flex" : "none";
 }
 
+document.getElementById("load-more").addEventListener("click", () => loadNews(true));
 loadNews();
