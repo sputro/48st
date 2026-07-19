@@ -62,20 +62,28 @@ alter table public.news enable row level security;
 create policy "News is public read" on public.news for select using (true);
 
 -- ---------------------------------------------------------
--- 3. SCHEDULES (public read-only)
+-- 3. SCHEDULES (public read-only) — mirrors jkt48.com's own schedule API.
+--    Covers ALL event types (SHOW, EXCLUSIVE, EVENT, etc), not just theater
+--    shows. Use `type = 'SHOW'` to filter theater shows specifically.
 -- ---------------------------------------------------------
-create table if not exists public.schedules (
+drop table if exists public.schedules cascade;
+
+create table public.schedules (
   id uuid primary key default uuid_generate_v4(),
-  show_title text not null,
-  setlist text,
-  show_date date not null,
-  show_time time not null,
-  venue text default 'JKT48 Theater',
-  poster_url text,
-  ticket_status text default 'Belum Tersedia',
-  ticket_url text,
+  jkt48_schedule_id int unique,   -- jkt48.com's own schedule_id, used to dedupe on re-scrape
+  reference_code text,
+  type text not null,             -- SHOW | EXCLUSIVE | EVENT | ...
+  title text not null,
+  link text,                      -- jkt48.com slug, e.g. "sh8e83-itadakilove-yogyakarta"
+  date date not null,
+  start_time time,
+  end_time time,
+  short_description text,
+  member_type text,               -- team name for SHOW events, e.g. LOVE, DREAM, TRAINEE
+  birthday_member text,
   created_at timestamptz not null default now()
 );
+
 alter table public.schedules enable row level security;
 create policy "Schedules is public read" on public.schedules for select using (true);
 

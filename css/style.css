@@ -179,6 +179,42 @@ button { font-family: inherit; cursor: pointer; }
 .badge-open { background: #e8f8ee; color: #1a8a45; }
 .badge-closed { background: #f1f1f3; color: var(--muted); }
 
+/* ---------- Schedule type & team badges ---------- */
+.type-badge { font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px; text-transform: uppercase; letter-spacing: .03em; }
+.type-SHOW { background: var(--red-light); color: var(--red); }
+.type-EXCLUSIVE { background: #fff4e0; color: #b8720a; }
+.type-EVENT { background: #e8f0ff; color: #2b5fd9; }
+.type-OTHER { background: #f1f1f3; color: var(--muted); }
+
+.team-badge {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 999px; color: #fff;
+}
+.team-LOVE { background: #e0335f; }
+.team-DREAM { background: #7b4fe0; }
+.team-HAPPY { background: #f0a500; }
+.team-TRAINEE { background: #6b6670; }
+.team-JKT48 { background: var(--red); }
+.team-DEFAULT { background: #9a95a0; }
+
+/* ---------- Countdown widget ---------- */
+.countdown-card {
+  background: linear-gradient(135deg, var(--red) 0%, #8f0a1e 100%);
+  border-radius: var(--radius-lg); padding: 22px; color: #fff; margin-bottom: 22px;
+  position: relative; overflow: hidden;
+}
+.countdown-card::before {
+  content: ""; position: absolute; top: -30%; right: -8%; width: 220px; height: 220px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 70%);
+}
+.countdown-card .label { font-size: 12px; opacity: .85; display: flex; align-items: center; gap: 6px; position: relative; z-index: 1; }
+.countdown-card h3 { font-family: var(--font-display); font-size: 19px; margin: 8px 0 4px; position: relative; z-index: 1; }
+.countdown-card .meta { font-size: 13px; opacity: .9; margin-bottom: 16px; position: relative; z-index: 1; }
+.countdown-timer { display: flex; gap: 10px; position: relative; z-index: 1; }
+.countdown-timer .unit { background: rgba(255,255,255,.16); border-radius: var(--radius-sm); padding: 10px 14px; text-align: center; min-width: 60px; }
+.countdown-timer .unit .num { font-family: var(--font-display); font-size: 22px; font-weight: 700; line-height: 1; }
+.countdown-timer .unit .lbl { font-size: 10px; opacity: .8; text-transform: uppercase; margin-top: 4px; }
+
 /* ---------- Tabs (member streaming) ---------- */
 .tabs { display: flex; gap: 22px; border-bottom: 1px solid var(--line); overflow-x: auto; }
 .tab { padding: 12px 2px; font-size: 14.5px; font-weight: 600; color: var(--muted); white-space: nowrap; border-bottom: 2px solid transparent; }

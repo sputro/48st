@@ -28,27 +28,24 @@ async function loadSchedulePreview() {
   const el = document.getElementById("schedule-list");
   const { data, error } = await sb
     .from("schedules").select("*")
-    .gte("show_date", new Date().toISOString().slice(0, 10))
-    .order("show_date", { ascending: true }).limit(4);
+    .gte("date", new Date().toISOString().slice(0, 10))
+    .order("date", { ascending: true }).limit(4);
 
   if (error || !data || data.length === 0) {
-    el.innerHTML = `<div class="empty-state">Belum ada jadwal show mendatang.</div>`;
+    el.innerHTML = `<div class="empty-state">Belum ada jadwal mendatang.</div>`;
     return;
   }
   el.innerHTML = data.map(s => {
-    const { day, month } = formatDateShort(s.show_date);
-    const open = (s.ticket_status || '').toLowerCase().includes('tersedia') && !(s.ticket_status || '').toLowerCase().includes('belum');
+    const { day, month } = formatDateShort(s.date);
+    const typeClass = ["SHOW", "EXCLUSIVE", "EVENT"].includes(s.type) ? s.type : "OTHER";
     return `
     <div class="schedule-card">
       <div class="date-box"><div class="d">${day}</div><div class="m">${month}</div></div>
       <div class="info" style="flex:1;">
-        <h4>${escapeHtml(s.show_title)}</h4>
+        <span class="type-badge type-${typeClass}" style="margin-bottom:6px;display:inline-block;">${escapeHtml(s.type)}</span>
+        <h4>${escapeHtml(s.title)}</h4>
         <div class="meta">
-          <span><i class="fa-solid fa-clock"></i> ${s.show_time ? s.show_time.slice(0,5) : ''} WIB</span>
-          <span><i class="fa-solid fa-location-dot"></i> ${escapeHtml(s.venue || 'JKT48 Theater')}</span>
-        </div>
-        <div style="margin-top:8px;">
-          <span class="badge ${open ? 'badge-open' : 'badge-closed'}">${escapeHtml(s.ticket_status || 'Belum Tersedia')}</span>
+          <span><i class="fa-solid fa-clock"></i> ${s.start_time ? s.start_time.slice(0,5) : ''} WIB</span>
         </div>
       </div>
     </div>`;

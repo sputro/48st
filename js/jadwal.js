@@ -89,29 +89,77 @@ async function loadSchedule() {
   const el = document.getElementById("schedule-list");
   const { data, error } = await sb
     .from("schedules").select("*")
-    .gte("show_date", new Date().toISOString().slice(0, 10))
-    .order("show_date", { ascending: true });
+    .eq("type", "SHOW")
+    .gte("date", new Date().toISOString().slice(0, 10))
+    .order("date", { ascending: true })
+    .order("start_time", { ascending: true })
+    .limit(20);
 
   if (error || !data || data.length === 0) {
     el.innerHTML = `<div class="empty-state">Belum ada jadwal show mendatang.</div>`;
+    document.getElementById("countdown-wrap").innerHTML = "";
     return;
   }
+
+  renderCountdown(data[0]);
+
   el.innerHTML = data.map(s => {
-    const { day, month } = formatDateShort(s.show_date);
-    const open = (s.ticket_status || '').toLowerCase().includes('tersedia') && !(s.ticket_status || '').toLowerCase().includes('belum');
+    const { day, month } = formatDateShort(s.date);
+    const team = (s.member_type || "").toUpperCase();
+    const teamClass = ["LOVE", "DREAM", "HAPPY", "TRAINEE", "JKT48"].includes(team) ? team : "DEFAULT";
     return `
     <div class="schedule-card">
       <div class="date-box"><div class="d">${day}</div><div class="m">${month}</div></div>
       <div class="info" style="flex:1;">
-        <h4>${escapeHtml(s.show_title)}</h4>
+        ${s.member_type ? `<span class="team-badge team-${teamClass}" style="margin-bottom:6px;"><i class="fa-solid fa-users"></i> Team ${escapeHtml(s.member_type)}</span>` : ""}
+        <h4>${escapeHtml(s.title)}</h4>
         <div class="meta">
-          <span><i class="fa-solid fa-clock"></i> ${s.show_time ? s.show_time.slice(0,5) : ''} WIB</span>
-          <span><i class="fa-solid fa-location-dot"></i> ${escapeHtml(s.venue || 'JKT48 Theater')}</span>
+          <span><i class="fa-solid fa-clock"></i> ${s.start_time ? s.start_time.slice(0,5) : ''} WIB</span>
         </div>
-        <div style="margin-top:8px;"><span class="badge ${open ? 'badge-open' : 'badge-closed'}">${escapeHtml(s.ticket_status || 'Belum Tersedia')}</span></div>
       </div>
     </div>`;
   }).join("");
+}
+
+let countdownTimer = null;
+
+function renderCountdown(nextShow) {
+  const wrap = document.getElementById("countdown-wrap");
+  const targetDate = new Date(`${nextShow.date}T${nextShow.start_time || '19:00:00'}`);
+
+  wrap.innerHTML = `
+    <div class="countdown-card">
+      <div class="label"><i class="fa-solid fa-hourglass-half"></i> Show Berikutnya</div>
+      <h3>${escapeHtml(nextShow.title)}</h3>
+      <div class="meta">${targetDate.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' })} • ${nextShow.start_time ? nextShow.start_time.slice(0,5) : ''} WIB</div>
+      <div class="countdown-timer" id="countdown-timer">
+        <div class="unit"><div class="num" id="cd-days">--</div><div class="lbl">Hari</div></div>
+        <div class="unit"><div class="num" id="cd-hours">--</div><div class="lbl">Jam</div></div>
+        <div class="unit"><div class="num" id="cd-mins">--</div><div class="lbl">Menit</div></div>
+        <div class="unit"><div class="num" id="cd-secs">--</div><div class="lbl">Detik</div></div>
+      </div>
+    </div>`;
+
+  if (countdownTimer) clearInterval(countdownTimer);
+
+  function tick() {
+    const diff = targetDate.getTime() - Date.now();
+    if (diff <= 0) {
+      document.getElementById("countdown-timer").innerHTML = `<div class="unit" style="min-width:auto;">Sedang berlangsung!</div>`;
+      clearInterval(countdownTimer);
+      return;
+    }
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    document.getElementById("cd-days").textContent = days;
+    document.getElementById("cd-hours").textContent = String(hours).padStart(2, "0");
+    document.getElementById("cd-mins").textContent = String(mins).padStart(2, "0");
+    document.getElementById("cd-secs").textContent = String(secs).padStart(2, "0");
+  }
+  tick();
+  countdownTimer = setInterval(tick, 1000);
 }
 
 init();

@@ -3,17 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Stream & Jadwal Show — 48ST Fan Hub</title>
+<title>Jadwal & Event — 48ST Fan Hub</title>
 <link rel="icon" type="image/png" href="/assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="css/style.css">
-<style>
-  .stream-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
-  @media (min-width: 640px) { .stream-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 1024px) { .stream-grid { grid-template-columns: repeat(3, 1fr); } }
-</style>
 </head>
 <body>
 
@@ -24,47 +19,46 @@
   </div>
   <nav class="nav-links">
     <a href="index.html"><i class="fa-solid fa-newspaper"></i> News</a>
-    <a href="schedule.html"><i class="fa-solid fa-calendar-days"></i> Schedule</a>
-    <a href="jadwal.html" class="active"><i class="fa-solid fa-video"></i> Live Stream</a>
+    <a href="schedule.html" class="active"><i class="fa-solid fa-calendar-days"></i> Schedule</a>
+    <a href="jadwal.html"><i class="fa-solid fa-video"></i> Live Stream</a>
     <a href="replay.html"><i class="fa-solid fa-clock-rotate-left"></i> Replay</a>
     <a href="profile.html"><i class="fa-solid fa-user"></i> Profil</a>
   </nav>
   <div class="actions">
-    <img id="topbar-avatar" class="avatar" src="assets/profile/1.png" alt="avatar" style="display:none;">
-    <a href="login.html" id="topbar-login" class="btn btn-outline" style="padding:9px 18px;font-size:13.5px;">
+    <a href="login.html" class="btn btn-outline" style="padding:9px 18px;font-size:13.5px;">
       <i class="fa-solid fa-right-to-bracket"></i> Masuk
     </a>
   </div>
 </header>
 
 <section class="section" style="padding-bottom:0;">
-  <div class="tabs">
-    <div class="tab active" data-status="live">Sedang Tayang</div>
-    <div class="tab" data-status="upcoming">Akan Datang</div>
-  </div>
-  <div id="stream-grid" class="stream-grid" style="margin-top:18px;">
-    <div class="stream-card"><div class="poster skeleton" style="height:190px;"></div></div>
-    <div class="stream-card"><div class="poster skeleton" style="height:190px;"></div></div>
-  </div>
-</section>
-
-<section class="section">
   <div class="section-head">
-    <h3><i class="fa-solid fa-masks-theater" style="font-size:15px;margin-right:6px;"></i>Jadwal Show Teater</h3>
-    <a href="schedule.html" class="see-all">Semua Jadwal &amp; Event</a>
+    <h3><i class="fa-solid fa-calendar-days" style="font-size:15px;margin-right:6px;"></i>Semua Jadwal & Event</h3>
   </div>
 
-  <div id="countdown-wrap"></div>
+  <div class="filters" style="padding:0 0 16px;">
+    <select id="filter-type">
+      <option value="">Semua Tipe</option>
+      <option value="SHOW">Show</option>
+      <option value="EXCLUSIVE">Exclusive</option>
+      <option value="EVENT">Event</option>
+    </select>
+    <select id="filter-month"></select>
+  </div>
 
   <div id="schedule-list">
     <div class="schedule-card"><div class="skeleton" style="width:56px;height:56px;"></div></div>
+  </div>
+
+  <div style="text-align:center; margin: 16px 0 8px;">
+    <button class="btn btn-outline" id="load-more" style="display:none;">Muat Lebih Banyak</button>
   </div>
 </section>
 
 <nav class="bottom-nav">
   <a href="index.html"><i class="fa-solid fa-newspaper"></i>News</a>
-  <a href="schedule.html"><i class="fa-solid fa-calendar-days"></i>Schedule</a>
-  <a href="jadwal.html" class="active"><i class="fa-solid fa-video"></i>Live</a>
+  <a href="schedule.html" class="active"><i class="fa-solid fa-calendar-days"></i>Schedule</a>
+  <a href="jadwal.html"><i class="fa-solid fa-video"></i>Live</a>
   <a href="replay.html"><i class="fa-solid fa-clock-rotate-left"></i>Replay</a>
   <a href="profile.html"><i class="fa-solid fa-user"></i>Profil</a>
 </nav>
@@ -73,6 +67,6 @@
 <script src="js/config.js"></script>
 <script src="js/supabaseClient.js"></script>
 <script src="js/icons.js"></script>
-<script src="js/jadwal.js"></script>
+<script src="js/schedule.js"></script>
 </body>
 </html>
