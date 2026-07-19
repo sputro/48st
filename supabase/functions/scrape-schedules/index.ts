@@ -12,8 +12,16 @@
 // "Schedule" page can show everything.
 //
 // Query params (all optional):
-//   ?monthsBack=1    -> how many months in the past to include (default 1)
-//   ?monthsForward=3 -> how many months ahead to include (default 3)
+//   ?monthsBack=1    -> how many months in the PAST from today (default 1)
+//   ?monthsForward=3 -> how many months AHEAD from today (default 3)
+// OR, to backfill a specific historical range instead (overrides the above):
+//   ?fromYear=2011&fromMonth=1&toYear=2012&toMonth=12
+// JKT48 started around 2011, so to backfill everything, call this function
+// repeatedly in ~1-2 year chunks (a full 15-year range in one call risks an
+// Edge Function timeout), e.g.:
+//   ?fromYear=2011&fromMonth=1&toYear=2012&toMonth=12
+//   ?fromYear=2013&fromMonth=1&toYear=2014&toMonth=12
+//   ...and so on up to the current year.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -24,14 +32,34 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
-    const monthsBack = Number(url.searchParams.get("monthsBack") || "1");
-    const monthsForward = Number(url.searchParams.get("monthsForward") || "3");
-
-    const now = new Date();
     const monthsToFetch: { month: number; year: number }[] = [];
-    for (let offset = -monthsBack; offset <= monthsForward; offset++) {
-      const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-      monthsToFetch.push({ month: d.getMonth() + 1, year: d.getFullYear() });
+
+    const fromYear = url.searchParams.get("fromYear");
+    const fromMonth = url.searchParams.get("fromMonth");
+    const toYear = url.searchParams.get("toYear");
+    const toMonth = url.searchParams.get("toMonth");
+
+    if (fromYear && fromMonth && toYear && toMonth) {
+      // Explicit historical range mode.
+      let y = Number(fromYear);
+      let m = Number(fromMonth);
+      const endY = Number(toYear);
+      const endM = Number(toMonth);
+
+      while (y < endY || (y === endY && m <= endM)) {
+        monthsToFetch.push({ month: m, year: y });
+        m++;
+        if (m > 12) { m = 1; y++; }
+      }
+    } else {
+      // Default: relative to today.
+      const monthsBack = Number(url.searchParams.get("monthsBack") || "1");
+      const monthsForward = Number(url.searchParams.get("monthsForward") || "3");
+      const now = new Date();
+      for (let offset = -monthsBack; offset <= monthsForward; offset++) {
+        const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+        monthsToFetch.push({ month: d.getMonth() + 1, year: d.getFullYear() });
+      }
     }
 
     let allItems: any[] = [];
