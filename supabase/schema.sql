@@ -88,6 +88,33 @@ alter table public.schedules enable row level security;
 create policy "Schedules is public read" on public.schedules for select using (true);
 
 -- ---------------------------------------------------------
+-- 3b. SHOW LOGOS & MEMBER PHOTOS — jkt48.com's schedule API doesn't include
+--    per-show artwork or individual member photos, so these are curated
+--    manually (by you, the admin) and matched to schedules by title/team.
+-- ---------------------------------------------------------
+create table if not exists public.show_logos (
+  id uuid primary key default uuid_generate_v4(),
+  title_match text not null,   -- matched against schedules.title (case-insensitive "contains")
+  logo_url text not null,
+  created_at timestamptz not null default now()
+);
+alter table public.show_logos enable row level security;
+create policy "Show logos is public read" on public.show_logos for select using (true);
+
+create table if not exists public.member_photos (
+  id uuid primary key default uuid_generate_v4(),
+  member_name text not null,   -- e.g. a specific idol's name, or a team name like "LOVE"
+  photo_url text not null,
+  created_at timestamptz not null default now()
+);
+alter table public.member_photos enable row level security;
+create policy "Member photos is public read" on public.member_photos for select using (true);
+
+-- Example inserts (run manually via SQL Editor or Table Editor once you have real URLs):
+-- insert into public.show_logos (title_match, logo_url) values ('ITADAKI', 'https://.../itadaki-logo.png');
+-- insert into public.member_photos (member_name, photo_url) values ('LOVE', 'https://.../team-love.jpg');
+
+-- ---------------------------------------------------------
 -- 4. STREAMS (metadata public, stream_url only usable via Edge Function)
 -- ---------------------------------------------------------
 create table if not exists public.streams (

@@ -9,16 +9,22 @@ function formatDateShort(dateStr) {
 
 const PAGE_SIZE = 15;
 let offset = 0;
+let currentType = "";
 
-function populateMonthFilter() {
-  const select = document.getElementById("filter-month");
-  select.innerHTML = `<option value="">Semua Bulan</option>`;
-  const now = new Date();
-  for (let i = -1; i <= 3; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
-    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
-    select.innerHTML += `<option value="${value}">${label}</option>`;
+async function populateYearFilter() {
+  const select = document.getElementById("filter-year");
+  select.innerHTML = `<option value="">Semua Tahun</option>`;
+
+  const [{ data: oldest }, { data: newest }] = await Promise.all([
+    sb.from("schedules").select("date").order("date", { ascending: true }).limit(1),
+    sb.from("schedules").select("date").order("date", { ascending: false }).limit(1),
+  ]);
+
+  const minYear = oldest?.[0]?.date ? new Date(oldest[0].date).getFullYear() : new Date().getFullYear();
+  const maxYear = newest?.[0]?.date ? new Date(newest[0].date).getFullYear() : new Date().getFullYear();
+
+  for (let y = maxYear; y >= minYear; y--) {
+    select.innerHTML += `<option value="${y}">${y}</option>`;
   }
 }
 
@@ -32,17 +38,25 @@ async function loadSchedules(append = false) {
   const loadMoreBtn = document.getElementById("load-more");
   if (!append) el.innerHTML = `<div class="schedule-card"><div class="skeleton" style="width:56px;height:56px;"></div></div>`;
 
-  const type = document.getElementById("filter-type").value;
-  const monthVal = document.getElementById("filter-month").value;
+  const month = document.getElementById("filter-month").value;
+  const year = document.getElementById("filter-year").value;
 
   let query = sb.from("schedules").select("*").order("date", { ascending: true }).order("start_time", { ascending: true });
 
-  if (type) query = query.eq("type", type);
-  if (monthVal) {
-    const [year, month] = monthVal.split("-");
-    const start = `${year}-${month}-01`;
-    const nextMonth = new Date(Number(year), Number(month), 1); // month is 1-indexed here so this = first day of next month
-    const end = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}-01`;
+  if (currentType) query = query.eq("type", currentType);
+
+  if (year && month) {
+    const start = `${year}-${String(month).padStart(2, "0")}-01`;
+    const nd = new Date(Number(year), Number(month), 1);
+    const end = `${nd.getFullYear()}-${String(nd.getMonth() + 1).padStart(2, "0")}-01`;
+    query = query.gte("date", start).lt("date", end);
+  } else if (year) {
+    query = query.gte("date", `${year}-01-01`).lt("date", `${Number(year) + 1}-01-01`);
+  } else if (month) {
+    const y = new Date().getFullYear();
+    const start = `${y}-${String(month).padStart(2, "0")}-01`;
+    const nd = new Date(y, Number(month), 1);
+    const end = `${nd.getFullYear()}-${String(nd.getMonth() + 1).padStart(2, "0")}-01`;
     query = query.gte("date", start).lt("date", end);
   } else {
     query = query.gte("date", new Date().toISOString().slice(0, 10));
@@ -86,15 +100,24 @@ function renderScheduleCard(s) {
         </div>
         <h4>${escapeHtml(s.title)}</h4>
         <div class="meta">
+          <span>${new Date(s.date).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })}</span>
           ${s.start_time ? `<span><i class="fa-solid fa-clock"></i> ${s.start_time.slice(0,5)} WIB</span>` : ""}
         </div>
       </div>
     </div>`;
 }
 
-document.getElementById("filter-type").addEventListener("change", resetAndLoad);
-document.getElementById("filter-month").addEventListener("change", resetAndLoad);
-document.getElementById("load-more").addEventListener("click", () => loadSchedules(true));
+document.getElementById("type-segmented").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-type]");
+  if (!btn) return;
+  document.querySelectorAll("#type-segmented button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  currentType = btn.dataset.type;
+  resetAndLoad();
+});
 
-populateMonthFilter();
+document.getElementById("filter-month").addEventListener("change", resetAndLoad);
+document.getElementById("filter-year").addEventListener("change", resetAndLoad);
+
+populateYearFilter();
 loadSchedules();
