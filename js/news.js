@@ -3,11 +3,11 @@ function escapeHtml(str) {
   return str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 20;
 let offset = 0;
 
 async function loadNews(append = false) {
-  const el = document.getElementById("news-grid");
+  const el = document.getElementById("news-list");
   const loadMoreBtn = document.getElementById("load-more");
   loadMoreBtn.disabled = true;
   loadMoreBtn.textContent = "Memuat...";
@@ -24,25 +24,30 @@ async function loadNews(append = false) {
     return;
   }
   if (!data || data.length === 0) {
-    if (!append) el.innerHTML = `<div class="empty-state">Belum ada berita.</div>`;
+    if (offset === 0) el.innerHTML = `<div class="empty-state">Belum ada berita.</div>`;
     loadMoreBtn.style.display = "none";
     return;
   }
 
   const html = data.map(n => `
-    <a class="news-card" href="${n.source_url ? escapeHtml(n.source_url) : '#'}" target="_blank" rel="noopener">
-      <div class="body">
-        <div class="tag">${escapeHtml(n.category || 'Berita')}</div>
-        <h4>${escapeHtml(n.title)}</h4>
-        <div class="date">${new Date(n.published_at).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })}</div>
+    <a class="simple-list-item" href="${n.source_url ? escapeHtml(n.source_url) : '#'}" target="_blank" rel="noopener" style="text-decoration:none;">
+      <div class="thumb-slot">
+        <div class="date-box"><i class="fa-solid fa-newspaper" style="color:var(--red);"></i></div>
+      </div>
+      <div class="content">
+        <span class="type-badge type-OTHER" style="background:var(--red-light);color:var(--red);">${escapeHtml(n.category || 'Berita')}</span>
+        <h4 style="margin-top:6px;">${escapeHtml(n.title)}</h4>
+        <div class="meta-row">
+          <span>${new Date(n.published_at).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })}</span>
+        </div>
       </div>
     </a>`).join("");
 
-  el.innerHTML = append ? el.innerHTML + html : html;
+  el.innerHTML = offset === 0 ? html : el.innerHTML + html;
   offset += data.length;
 
   loadMoreBtn.disabled = false;
-  loadMoreBtn.textContent = "Muat Lebih Banyak";
+  loadMoreBtn.textContent = "Show More";
   loadMoreBtn.style.display = data.length === PAGE_SIZE ? "inline-flex" : "none";
 }
 

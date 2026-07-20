@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
       allItems = allItems.concat(items);
     }
 
-    const scheduleItems = allItems
+    const rawScheduleItems = allItems
       .map((s: any) => ({
         jkt48_schedule_id: s.schedule_id,
         reference_code: s.reference_code || null,
@@ -94,6 +94,17 @@ Deno.serve(async (req) => {
       }))
       .filter((s) => s.title && s.date && s.jkt48_schedule_id);
 
+    // De-duplicate by jkt48_schedule_id WITHIN this batch — Postgres's
+    // ON CONFLICT DO UPDATE errors out ("cannot affect row a second time")
+    // if the same conflict key appears more than once in a single upsert
+    // call, which can happen when the same event shows up in more than one
+    // month's API response near month boundaries.
+    const dedupedMap = new Map<number, any>();
+    for (const item of rawScheduleItems) {
+      dedupedMap.set(item.jkt48_schedule_id, item); // later occurrence wins, doesn't matter here since content is identical
+    }
+    const scheduleItems = [...dedupedMap.values()];
+
     if (scheduleItems.length === 0) {
       return new Response(JSON.stringify({ ok: true, schedules: 0, note: "No items found for this month range" }), {
         headers: { "Content-Type": "application/json" },
@@ -107,12 +118,12 @@ Deno.serve(async (req) => {
 
     if (dbError) {
       return new Response(
-        JSON.stringify({ ok: false, error: "Supabase insert failed: " + dbError.message, attempted: scheduleItems.length }),
+        JSON.stringify({ ok: false, error: "Supabase insert failed: " + dbError.message, attempted: scheduleItems.length, _version: "dedup-fix-1" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    return new Response(JSON.stringify({ ok: true, schedules: dbData?.length ?? scheduleItems.length, monthsFetched: monthsToFetch.length }), {
+    return new Response(JSON.stringify({ ok: true, schedules: dbData?.length ?? scheduleItems.length, monthsFetched: monthsToFetch.length, _version: "dedup-fix-1" }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {

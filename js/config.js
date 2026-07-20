@@ -5,8 +5,8 @@
 // (lihat supabase/schema.sql). JANGAN PERNAH taruh service_role key di sini.
 // =========================================================
 window.APP_CONFIG = {
-  SUPABASE_URL: "https://ddvfhsywpwgppdyvipul.supabase.co",
-  SUPABASE_ANON_KEY: "sb_publishable_K5QTp0IChER80dr1rbRuqQ_XFTqBYs6",
+  SUPABASE_URL: "https://YOUR-PROJECT-REF.supabase.co",
+  SUPABASE_ANON_KEY: "YOUR-PUBLIC-ANON-KEY",
 
   MEMBER_REDIRECT_URL: "index.html",
   LOGIN_URL: "login.html",

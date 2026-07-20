@@ -9,12 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="css/style.css">
-<style>
-  .news-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-  @media (min-width: 640px) { .news-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 1024px) { .news-grid { grid-template-columns: repeat(3, 1fr); } }
-  .news-grid .news-card { flex: initial; }
-</style>
 </head>
 <body>
 
@@ -24,7 +18,8 @@
     <h1>48ST <span class="accent">Fan Hub</span></h1>
   </div>
   <nav class="nav-links">
-    <a href="index.html"><i class="fa-solid fa-newspaper"></i> News</a>
+    <a href="index.html" class="active"><i class="fa-solid fa-newspaper"></i> News</a>
+    <a href="schedule.html"><i class="fa-solid fa-calendar-days"></i> Schedule</a>
     <a href="jadwal.html"><i class="fa-solid fa-video"></i> Live Stream</a>
     <a href="profile.html"><i class="fa-solid fa-user"></i> Profil</a>
   </nav>
@@ -39,19 +34,19 @@
   <div class="section-head">
     <h3><i class="fa-solid fa-newspaper" style="font-size:15px;margin-right:6px;"></i>Semua Berita JKT48</h3>
   </div>
-  <div id="news-grid" class="news-grid">
-    <div class="news-card"><div class="skeleton" style="height:100px;margin:16px;"></div></div>
-    <div class="news-card"><div class="skeleton" style="height:100px;margin:16px;"></div></div>
-    <div class="news-card"><div class="skeleton" style="height:100px;margin:16px;"></div></div>
+
+  <div id="news-list" class="simple-list">
+    <div class="simple-list-item"><div class="skeleton" style="width:52px;height:52px;"></div></div>
   </div>
 
-  <div style="text-align:center; margin-top:24px;">
-    <button class="btn btn-outline" id="load-more">Muat Lebih Banyak</button>
+  <div style="text-align:center; margin-top:16px;">
+    <button class="btn btn-outline" id="load-more" style="display:none;">Show More</button>
   </div>
 </section>
 
 <nav class="bottom-nav">
-  <a href="index.html"><i class="fa-solid fa-newspaper"></i>News</a>
+  <a href="index.html" class="active"><i class="fa-solid fa-newspaper"></i>News</a>
+  <a href="schedule.html"><i class="fa-solid fa-calendar-days"></i>Schedule</a>
   <a href="jadwal.html"><i class="fa-solid fa-video"></i>Live</a>
   <a href="profile.html"><i class="fa-solid fa-user"></i>Profil</a>
 </nav>

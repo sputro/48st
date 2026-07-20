@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cek Logo Show — Admin Tool</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body { padding: 20px; max-width: 800px; margin: 0 auto; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  th { font-size: 12px; text-transform: uppercase; color: var(--muted); }
+  code { background: var(--red-light); color: var(--red); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; }
+  .status-ok { color: #1a8a45; font-weight: 700; }
+  .status-missing { color: var(--muted); }
+  img.preview { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; vertical-align: middle; }
+</style>
+</head>
+<body>
+  <h2><i class="fa-solid fa-magnifying-glass"></i> Cek Logo Show</h2>
+  <p style="color:var(--muted); font-size:13.5px;">
+    Halaman ini bukan bagian dari website utama (tidak ada di navigasi) — cuma alat bantu buat kamu
+    lihat semua judul show unik di database, nama file logo yang seharusnya, dan apakah file itu
+    sudah ada di <code>assets/show/</code> atau belum.
+  </p>
+  <div id="result">Memuat data show dari database...</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/show-logo-map.js"></script>
+<script src="js/members-data.js"></script>
+  <script>
+    async function run() {
+      const { data, error } = await sb
+        .from("schedules")
+        .select("title")
+        .eq("type", "SHOW");
+
+      if (error || !data) {
+        document.getElementById("result").innerHTML = `<p style="color:red;">Gagal ambil data: ${error?.message}</p>`;
+        return;
+      }
+
+      // Ambil judul unik (banyak show yang sama muncul berkali-kali beda kota/tanggal).
+      const uniqueTitles = [...new Set(data.map(d => d.title.split(" - ")[0].trim()))].sort();
+
+      let html = `<p><strong>${uniqueTitles.length}</strong> judul show unik ditemukan.</p><table>
+        <thead><tr><th>Preview</th><th>Judul Asli</th><th>Nama File yang Dibutuhkan</th><th>Status</th></tr></thead><tbody>`;
+
+      for (const title of uniqueTitles) {
+        const path = getShowLogoPath(title);
+        const rowId = "row-" + Math.random().toString(36).slice(2);
+        html += `<tr id="${rowId}">
+          <td><img class="preview" src="${path}" onerror="this.style.display='none'"></td>
+          <td>${title}</td>
+          <td><code>${path}</code></td>
+          <td class="status-cell" data-path="${path}">Mengecek...</td>
+        </tr>`;
+      }
+      html += `</tbody></table>`;
+      document.getElementById("result").innerHTML = html;
+
+      // Cek satu-satu apakah file-nya beneran ke-load.
+      document.querySelectorAll(".status-cell").forEach(async (cell) => {
+        const path = cell.dataset.path;
+        try {
+          const res = await fetch(path, { method: "HEAD" });
+          cell.innerHTML = res.ok
+            ? `<span class="status-ok"><i class="fa-solid fa-circle-check"></i> Ada</span>`
+            : `<span class="status-missing"><i class="fa-solid fa-circle-minus"></i> Belum ada</span>`;
+        } catch {
+          cell.innerHTML = `<span class="status-missing"><i class="fa-solid fa-circle-minus"></i> Belum ada</span>`;
+        }
+      });
+    }
+    run();
+  </script>
+</body>
+</html>

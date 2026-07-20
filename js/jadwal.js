@@ -107,18 +107,29 @@ async function loadSchedule() {
     const { day, month } = formatDateShort(s.date);
     const team = (s.member_type || "").toUpperCase();
     const teamClass = ["LOVE", "DREAM", "HAPPY", "TRAINEE", "JKT48"].includes(team) ? team : "DEFAULT";
+    const logoPath = getShowLogoPath(s.title);
     return `
-    <div class="schedule-card">
-      <div class="date-box"><div class="d">${day}</div><div class="m">${month}</div></div>
-      <div class="info" style="flex:1;">
-        ${s.member_type ? `<span class="team-badge team-${teamClass}" style="margin-bottom:6px;"><i class="fa-solid fa-users"></i> Team ${escapeHtml(s.member_type)}</span>` : ""}
-        <h4>${escapeHtml(s.title)}</h4>
-        <div class="meta">
-          <span><i class="fa-solid fa-clock"></i> ${s.start_time ? s.start_time.slice(0,5) : ''} WIB</span>
+    <div class="simple-list-item">
+      <div class="thumb-slot">
+        <img class="show-logo-thumb" src="${logoPath}" alt=""
+             onerror="handleLogoFallback(this, '${day}', '${month}')">
+      </div>
+      <div class="content">
+        ${s.member_type ? `<span class="team-badge team-${teamClass}"><i class="fa-solid fa-users"></i> Team ${escapeHtml(s.member_type)}</span>` : ""}
+        <h4 style="margin-top:6px;">${escapeHtml(s.title)}</h4>
+        <div class="meta-row">
+          <span>${new Date(s.date).toLocaleDateString('id-ID', { day:'numeric', month:'long' })}</span>
+          ${s.start_time && s.start_time !== '00:00:00' ? `<span><i class="fa-solid fa-clock"></i> ${s.start_time.slice(0,5)} WIB</span>` : ""}
         </div>
+        ${s.member_type ? `<div class="member-strip" id="strip-${s.id}"></div>` : ""}
       </div>
     </div>`;
   }).join("");
+
+  data.forEach((s) => {
+    if (!s.member_type) return;
+    injectMemberPhotoStrip(document.getElementById(`strip-${s.id}`), s.member_type);
+  });
 }
 
 let countdownTimer = null;
@@ -131,7 +142,7 @@ function renderCountdown(nextShow) {
     <div class="countdown-card">
       <div class="label"><i class="fa-solid fa-hourglass-half"></i> Show Berikutnya</div>
       <h3>${escapeHtml(nextShow.title)}</h3>
-      <div class="meta">${targetDate.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' })} • ${nextShow.start_time ? nextShow.start_time.slice(0,5) : ''} WIB</div>
+      <div class="meta">${targetDate.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' })}${nextShow.start_time && nextShow.start_time !== '00:00:00' ? ' • ' + nextShow.start_time.slice(0,5) + ' WIB' : ''}</div>
       <div class="countdown-timer" id="countdown-timer">
         <div class="unit"><div class="num" id="cd-days">--</div><div class="lbl">Hari</div></div>
         <div class="unit"><div class="num" id="cd-hours">--</div><div class="lbl">Jam</div></div>
