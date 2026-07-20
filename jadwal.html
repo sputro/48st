@@ -53,11 +53,14 @@
     <a href="schedule.html" class="see-all">Semua Jadwal &amp; Event</a>
   </div>
 
-  <div id="countdown-wrap"></div>
-
-  <div id="schedule-list" class="simple-list">
-    <div class="schedule-card"><div class="skeleton" style="width:56px;height:56px;"></div></div>
+  <div id="schedule-list">
+    <div class="show-card"><div class="skeleton" style="height:180px;"></div></div>
   </div>
+
+  <button class="load-more-arrow" id="load-more" style="display:none;">
+    <i class="fa-solid fa-chevron-down"></i>
+    <span id="load-more-label">Lihat lainnya</span>
+  </button>
 </section>
 
 <nav class="bottom-nav">
@@ -73,6 +76,7 @@
 <script src="js/icons.js"></script>
 <script src="js/show-logo-map.js"></script>
 <script src="js/member-photos.js"></script>
+<script src="js/show-card.js"></script>
 <script src="js/jadwal.js"></script>
 </body>
 </html>

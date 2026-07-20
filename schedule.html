@@ -42,13 +42,25 @@
     <button data-type="EVENT">Event</button>
   </div>
 
+  <div class="mini-filter-row">
+    <select id="filter-month">
+      <option value="">Semua Bulan</option>
+      <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+      <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+      <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+      <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+    </select>
+    <select id="filter-year"><option value="">Semua Tahun</option></select>
+  </div>
+
   <div id="schedule-list" class="simple-list">
     <div class="simple-list-item"><div class="skeleton" style="width:52px;height:52px;"></div></div>
   </div>
 
-  <div style="text-align:center; margin: 16px 0 8px;">
-    <button class="btn btn-outline" id="load-more" style="display:none;">Show More</button>
-  </div>
+  <button class="load-more-arrow" id="load-more" style="display:none;">
+    <i class="fa-solid fa-chevron-down"></i>
+    <span id="load-more-label">Lihat lainnya</span>
+  </button>
 </section>
 
 <nav class="bottom-nav">
@@ -64,6 +76,7 @@
 <script src="js/icons.js"></script>
 <script src="js/show-logo-map.js"></script>
 <script src="js/member-photos.js"></script>
+<script src="js/show-card.js"></script>
 <script src="js/schedule.js"></script>
 </body>
 </html>

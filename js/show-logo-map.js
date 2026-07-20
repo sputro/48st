@@ -1,25 +1,19 @@
 // js/show-logo-map.js
 //
-// Peta kata kunci -> nama file logo di assets/show/.
-// Sistem cari apakah judul show MENGANDUNG salah satu keyword ini
-// (gak peduli huruf besar/kecil), lalu pakai file yang cocok.
-//
-// ⚠️ Beberapa keyword di bawah ini masih TEBAKAN saya berdasarkan nama file yang
-// kamu kasih (cmr, dream, love, pajama, passion, percin, twt). Tolong dicek &
-// dikoreksi kalau ada yang salah — tinggal edit value keyword-nya di sini,
-// gak perlu ubah kode lain.
+// Peta "kata kunci di judul show" -> nama file logo di assets/show/.
+// Sistem cari apakah judul show MENGANDUNG (case-insensitive) salah satu
+// keyword ini, lalu pakai file yang cocok. Kalau nambah show baru, tinggal
+// tambah baris baru di sini.
 window.SHOW_LOGO_MAP = {
-  "love": "love.png",       // dugaan: show dengan "LOVE" di judul, misal ITADAKI♥LOVE
-  "dream": "dream.png",     // dugaan: DREAM BAKUDAN
-  "pajama": "pajama.png",   // dugaan: Pajama Drive
-  "passion": "passion.png", // ⚠️ belum yakin judul aslinya apa
-  "percin": "percin.png",   // ⚠️ dugaan: "Perlukah Cinta Ini" (disingkat PER-CIN)?
-  "twt": "twt.png",         // ⚠️ belum yakin judul aslinya apa
-  "cmr": "cmr.png",         // ⚠️ belum yakin judul aslinya apa
+  "cara meminum ramune": "cmr.png",
+  "menggandeng erat tanganku": "twt.png",
+  "pertaruhan cinta": "percintaan.png",
+  "love": "love.png",
+  "dream": "dream.png",
+  "pajama": "pajama.png",
+  "passion": "passion.png",
 };
 
-// Cari file logo yang cocok dari judul show. Return "" kalau gak ada yang cocok
-// (nanti otomatis fallback ke kotak tanggal biasa, gak error).
 function getShowLogoPath(title) {
   if (!title) return "";
   const lower = title.toLowerCase();

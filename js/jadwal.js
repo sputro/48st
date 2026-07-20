@@ -85,92 +85,44 @@ function goWatch(streamId) {
   window.location.href = `watch.html?stream=${streamId}`;
 }
 
-async function loadSchedule() {
+let scheduleOffset = 0;
+const SCHEDULE_PAGE_SIZE = 5;
+
+async function loadSchedule(append = false) {
   const el = document.getElementById("schedule-list");
-  const { data, error } = await sb
-    .from("schedules").select("*")
-    .eq("type", "SHOW")
-    .gte("date", new Date().toISOString().slice(0, 10))
-    .order("date", { ascending: true })
-    .order("start_time", { ascending: true })
-    .limit(20);
+  const loadMoreBtn = document.getElementById("load-more");
+  if (!append) el.innerHTML = `<div class="show-card"><div class="skeleton" style="height:180px;"></div></div>`;
+
+  const baseFilter = (q) => q.eq("type", "SHOW").gte("date", new Date().toISOString().slice(0, 10));
+
+  const [{ data, error }, { count }] = await Promise.all([
+    baseFilter(sb.from("schedules").select("*"))
+      .order("date", { ascending: true }).order("start_time", { ascending: true })
+      .range(scheduleOffset, scheduleOffset + SCHEDULE_PAGE_SIZE - 1),
+    baseFilter(sb.from("schedules").select("*", { count: "exact", head: true })),
+  ]);
 
   if (error || !data || data.length === 0) {
-    el.innerHTML = `<div class="empty-state">Belum ada jadwal show mendatang.</div>`;
-    document.getElementById("countdown-wrap").innerHTML = "";
+    if (!append) el.innerHTML = `<div class="empty-state">Belum ada jadwal show mendatang.</div>`;
+    loadMoreBtn.style.display = "none";
     return;
   }
 
-  renderCountdown(data[0]);
+  const html = data.map(renderShowCard).join("");
+  el.innerHTML = append ? el.innerHTML + html : html;
+  scheduleOffset += data.length;
 
-  el.innerHTML = data.map(s => {
-    const { day, month } = formatDateShort(s.date);
-    const team = (s.member_type || "").toUpperCase();
-    const teamClass = ["LOVE", "DREAM", "PASSION", "TRAINEE", "JKT48"].includes(team) ? team : "DEFAULT";
-    const logoPath = getShowLogoPath(s.title);
-    return `
-    <div class="simple-list-item">
-      <div class="thumb-slot">
-        <img class="show-logo-thumb" src="${logoPath}" alt=""
-             onerror="handleLogoFallback(this, '${day}', '${month}')">
-      </div>
-      <div class="content">
-        ${s.member_type ? `<span class="team-badge team-${teamClass}"><i class="fa-solid fa-users"></i> Team ${escapeHtml(s.member_type)}</span>` : ""}
-        <h4 style="margin-top:6px;">${escapeHtml(s.title)}</h4>
-        <div class="meta-row">
-          <span>${new Date(s.date).toLocaleDateString('id-ID', { day:'numeric', month:'long' })}</span>
-          ${s.start_time && s.start_time !== '00:00:00' ? `<span><i class="fa-solid fa-clock"></i> ${s.start_time.slice(0,5)} WIB</span>` : ""}
-        </div>
-        ${s.member_type ? `<div class="member-strip" id="strip-${s.id}"></div>` : ""}
-      </div>
-    </div>`;
-  }).join("");
+  initShowCards(data);
 
-  data.forEach((s) => {
-    if (!s.member_type) return;
-    injectMemberPhotoStrip(document.getElementById(`strip-${s.id}`), s.member_type);
-  });
-}
-
-let countdownTimer = null;
-
-function renderCountdown(nextShow) {
-  const wrap = document.getElementById("countdown-wrap");
-  const targetDate = new Date(`${nextShow.date}T${nextShow.start_time || '19:00:00'}`);
-
-  wrap.innerHTML = `
-    <div class="countdown-card">
-      <div class="label"><i class="fa-solid fa-hourglass-half"></i> Show Berikutnya</div>
-      <h3>${escapeHtml(nextShow.title)}</h3>
-      <div class="meta">${targetDate.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' })}${nextShow.start_time && nextShow.start_time !== '00:00:00' ? ' • ' + nextShow.start_time.slice(0,5) + ' WIB' : ''}</div>
-      <div class="countdown-timer" id="countdown-timer">
-        <div class="unit"><div class="num" id="cd-days">--</div><div class="lbl">Hari</div></div>
-        <div class="unit"><div class="num" id="cd-hours">--</div><div class="lbl">Jam</div></div>
-        <div class="unit"><div class="num" id="cd-mins">--</div><div class="lbl">Menit</div></div>
-        <div class="unit"><div class="num" id="cd-secs">--</div><div class="lbl">Detik</div></div>
-      </div>
-    </div>`;
-
-  if (countdownTimer) clearInterval(countdownTimer);
-
-  function tick() {
-    const diff = targetDate.getTime() - Date.now();
-    if (diff <= 0) {
-      document.getElementById("countdown-timer").innerHTML = `<div class="unit" style="min-width:auto;">Sedang berlangsung!</div>`;
-      clearInterval(countdownTimer);
-      return;
-    }
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const secs = Math.floor((diff % 60000) / 1000);
-    document.getElementById("cd-days").textContent = days;
-    document.getElementById("cd-hours").textContent = String(hours).padStart(2, "0");
-    document.getElementById("cd-mins").textContent = String(mins).padStart(2, "0");
-    document.getElementById("cd-secs").textContent = String(secs).padStart(2, "0");
+  const remaining = (count || 0) - scheduleOffset;
+  if (remaining > 0) {
+    document.getElementById("load-more-label").textContent = `${remaining} show lainnya`;
+    loadMoreBtn.style.display = "flex";
+  } else {
+    loadMoreBtn.style.display = "none";
   }
-  tick();
-  countdownTimer = setInterval(tick, 1000);
 }
+
+document.getElementById("load-more").addEventListener("click", () => loadSchedule(true));
 
 init();

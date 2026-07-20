@@ -236,6 +236,64 @@ button { font-family: inherit; cursor: pointer; }
 }
 .simple-filter-row button.active { background: var(--red); border-color: var(--red); color: #fff; }
 
+/* ---------- Show card (rich design, khusus type SHOW) ---------- */
+.show-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  overflow: hidden; box-shadow: var(--shadow); margin-bottom: 18px;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+@media (hover: hover) {
+  .show-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+}
+.show-card .poster-wrap { position: relative; aspect-ratio: 16/9; background: var(--line); overflow: hidden; }
+.show-card .poster-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.show-card .team-pill-corner {
+  position: absolute; top: 12px; left: 12px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 800; color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(4px);
+}
+.show-card .body { padding: 16px 18px 18px; }
+.show-card h4 { font-family: var(--font-display); font-size: 17px; margin: 0 0 8px; line-height: 1.35; }
+.show-card .datetime-row { display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 14px; flex-wrap: wrap; }
+.show-card .datetime-row span { display: inline-flex; align-items: center; gap: 6px; }
+.show-card .datetime-row i { color: var(--red); }
+
+.member-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.member-grid .member-chip { display: flex; align-items: center; gap: 6px; background: var(--bg); border-radius: 999px; padding: 4px 12px 4px 4px; }
+.member-grid .member-chip img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: var(--line); }
+.member-grid .member-chip span { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+
+.show-status-row {
+  background: var(--ink); border-radius: var(--radius-md); padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.show-status-row .mini-countdown { display: flex; gap: 6px; align-items: baseline; }
+.show-status-row .mini-countdown .u { text-align: center; }
+.show-status-row .mini-countdown .u .n { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: #ff5a6e; line-height: 1; }
+.show-status-row .mini-countdown .u .l { font-size: 9px; color: #9a95a0; text-transform: uppercase; margin-top: 2px; }
+.show-status-row .mini-countdown .sep { color: #57525c; font-size: 15px; }
+.show-status-row .status-text { font-size: 12.5px; font-weight: 700; color: #fff; }
+.show-status-row .status-text.ongoing { color: #4ade80; }
+.show-status-row .status-text.finished { color: #9a95a0; }
+
+/* ---------- Minimalist month/year filter ---------- */
+.mini-filter-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.mini-filter-row select {
+  border: none; background: var(--bg); color: var(--ink); font-size: 13px; font-weight: 600;
+  padding: 8px 30px 8px 12px; border-radius: var(--radius-sm);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6670' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; appearance: none; -webkit-appearance: none;
+}
+
+/* ---------- "Show More" as remaining-count arrow ---------- */
+.load-more-arrow {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 100%; background: none; border: none; padding: 14px; color: var(--muted); font-size: 12.5px; font-weight: 600;
+}
+.load-more-arrow i { font-size: 18px; color: var(--red); animation: bounce-down 1.6s ease-in-out infinite; }
+@keyframes bounce-down { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
 /* ---------- Schedule type & team badges ---------- */
 .type-badge { font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px; text-transform: uppercase; letter-spacing: .03em; }
 .type-SHOW { background: var(--red-light); color: var(--red); }

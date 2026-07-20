@@ -16,15 +16,22 @@ function proxyImage(url) {
 
 const _memberPhotoCache = new Map();
 
+// Foto doang (dipakai di beberapa tempat lama) — TIDAK dipotong jumlahnya.
 async function getTeamMemberPhotos(teamName) {
+  const members = await getTeamMembers(teamName);
+  return members.map((m) => m.photo_url).filter(Boolean);
+}
+
+// Data lengkap (nama, nickname, foto) — dipakai show-card.js buat render grid member.
+async function getTeamMembers(teamName) {
   if (!teamName) return [];
   const key = teamName.toUpperCase();
   if (_memberPhotoCache.has(key)) return _memberPhotoCache.get(key);
 
-  const { data, error } = await sb.from("members").select("photo_url").eq("type", key);
-  const urls = (!error && data) ? data.map((m) => proxyImage(m.photo_url)).filter(Boolean) : [];
-  _memberPhotoCache.set(key, urls);
-  return urls;
+  const { data, error } = await sb.from("members").select("name, nickname, photo_url").eq("type", key);
+  const members = (!error && data) ? data.map((m) => ({ ...m, photo_url: proxyImage(m.photo_url) })) : [];
+  _memberPhotoCache.set(key, members);
+  return members;
 }
 
 // Dipanggil setelah kartu show di-render, isi strip foto tim ke elemen kosong.
