@@ -101,18 +101,22 @@ create table if not exists public.show_logos (
 alter table public.show_logos enable row level security;
 create policy "Show logos is public read" on public.show_logos for select using (true);
 
-create table if not exists public.member_photos (
+-- ---------------------------------------------------------
+-- 3c. MEMBERS — mirrors jkt48.com's own member API (official, auto-updated).
+--    Replaces manual member_photos entry — foto & tim otomatis dari sumbernya.
+-- ---------------------------------------------------------
+create table if not exists public.members (
   id uuid primary key default uuid_generate_v4(),
-  member_name text not null,   -- e.g. a specific idol's name, or a team name like "LOVE"
-  photo_url text not null,
+  jkt48_member_id int unique not null,
+  code text,
+  name text not null,
+  nickname text,
+  photo_url text,
+  type text,   -- LOVE | DREAM | PASSION | TRAINEE
   created_at timestamptz not null default now()
 );
-alter table public.member_photos enable row level security;
-create policy "Member photos is public read" on public.member_photos for select using (true);
-
--- Example inserts (run manually via SQL Editor or Table Editor once you have real URLs):
--- insert into public.show_logos (title_match, logo_url) values ('ITADAKI', 'https://.../itadaki-logo.png');
--- insert into public.member_photos (member_name, photo_url) values ('LOVE', 'https://.../team-love.jpg');
+alter table public.members enable row level security;
+create policy "Members is public read" on public.members for select using (true);
 
 -- ---------------------------------------------------------
 -- 4. STREAMS (metadata public, stream_url only usable via Edge Function)

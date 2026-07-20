@@ -249,7 +249,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .team-LOVE { background: #e0335f; }
 .team-DREAM { background: #7b4fe0; }
-.team-HAPPY { background: #f0a500; }
+.team-PASSION { background: #f0a500; }
 .team-TRAINEE { background: #6b6670; }
 .team-JKT48 { background: var(--red); }
 .team-DEFAULT { background: #9a95a0; }

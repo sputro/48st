@@ -106,7 +106,7 @@ async function loadSchedule() {
   el.innerHTML = data.map(s => {
     const { day, month } = formatDateShort(s.date);
     const team = (s.member_type || "").toUpperCase();
-    const teamClass = ["LOVE", "DREAM", "HAPPY", "TRAINEE", "JKT48"].includes(team) ? team : "DEFAULT";
+    const teamClass = ["LOVE", "DREAM", "PASSION", "TRAINEE", "JKT48"].includes(team) ? team : "DEFAULT";
     const logoPath = getShowLogoPath(s.title);
     return `
     <div class="simple-list-item">

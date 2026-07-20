@@ -55,7 +55,7 @@ async function loadSchedules(append = false) {
 function renderItem(s) {
   const { day, month } = formatDateShort(s.date);
   const team = (s.member_type || "").toUpperCase();
-  const teamClass = ["LOVE", "DREAM", "HAPPY", "TRAINEE", "JKT48"].includes(team) ? team : "DEFAULT";
+  const teamClass = ["LOVE", "DREAM", "PASSION", "TRAINEE", "JKT48"].includes(team) ? team : "DEFAULT";
   const typeClass = ["SHOW", "EXCLUSIVE", "EVENT"].includes(s.type) ? s.type : "OTHER";
   const logoPath = getShowLogoPath(s.title);
 
