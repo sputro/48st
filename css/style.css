@@ -265,17 +265,17 @@ button { font-family: inherit; cursor: pointer; }
 .member-grid .member-chip span { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; }
 
 .show-status-row {
-  background: var(--ink); border-radius: var(--radius-md); padding: 12px 14px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px 14px;
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
 }
 .show-status-row .mini-countdown { display: flex; gap: 6px; align-items: baseline; }
 .show-status-row .mini-countdown .u { text-align: center; }
-.show-status-row .mini-countdown .u .n { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: #ff5a6e; line-height: 1; }
-.show-status-row .mini-countdown .u .l { font-size: 9px; color: #9a95a0; text-transform: uppercase; margin-top: 2px; }
-.show-status-row .mini-countdown .sep { color: #57525c; font-size: 15px; }
-.show-status-row .status-text { font-size: 12.5px; font-weight: 700; color: #fff; }
-.show-status-row .status-text.ongoing { color: #4ade80; }
-.show-status-row .status-text.finished { color: #9a95a0; }
+.show-status-row .mini-countdown .u .n { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--red); line-height: 1; }
+.show-status-row .mini-countdown .u .l { font-size: 9px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+.show-status-row .mini-countdown .sep { color: var(--line); font-size: 15px; }
+.show-status-row .status-text { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+.show-status-row .status-text.ongoing { color: #1a8a45; }
+.show-status-row .status-text.finished { color: var(--muted); }
 
 /* ---------- Minimalist month/year filter ---------- */
 .mini-filter-row { display: flex; gap: 8px; margin-bottom: 14px; }
@@ -293,6 +293,24 @@ button { font-family: inherit; cursor: pointer; }
 }
 .load-more-arrow i { font-size: 18px; color: var(--red); animation: bounce-down 1.6s ease-in-out infinite; }
 @keyframes bounce-down { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+/* ---------- Desktop: show-card grid (dipakai di index.html & jadwal.html,
+   yang listnya isi show-card doang, beda dari schedule.html yang campur) ---------- */
+@media (min-width: 900px) {
+  #schedule-list.show-card-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: start;
+  }
+  #schedule-list.show-card-grid .show-card { margin-bottom: 0; }
+  .show-card .poster-wrap { aspect-ratio: 16/10; }
+  .show-card h4 { font-size: 18px; }
+  .show-card:hover .poster-wrap img { transform: scale(1.04); }
+  .show-card .poster-wrap img { transition: transform .3s ease; }
+  .member-grid .member-chip { padding: 5px 14px 5px 5px; }
+  .member-grid .member-chip img { width: 30px; height: 30px; }
+}
+@media (min-width: 1280px) {
+  #schedule-list.show-card-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+}
 
 /* ---------- Schedule type & team badges ---------- */
 .type-badge { font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px; text-transform: uppercase; letter-spacing: .03em; }
