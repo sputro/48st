@@ -75,6 +75,14 @@ async function fetchShowLineup(referenceCode) {
 }
 
 // ---------- Isi grid member: coba lineup ASLI per-show dulu, fallback ke roster tim ----------
+// SVG kue ulang tahun kecil, dipakai currentColor jadi ngikut warna teks/CSS.
+const BIRTHDAY_CAKE_SVG = `<svg class="birthday-cake-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 1.5a1 1 0 011 1v.69a1.75 1.75 0 11-2 0V2.5a1 1 0 011-1z"/>
+  <path d="M12 5.5a1 1 0 011 1v.5h-2v-.5a1 1 0 011-1z"/>
+  <path d="M5.5 9A2.5 2.5 0 018 6.5h8A2.5 2.5 0 0118.5 9v1.25a.75.75 0 01-.75.75H6.25a.75.75 0 01-.75-.75V9z"/>
+  <path d="M4.5 12.5h15a.75.75 0 01.75.75V19a2.5 2.5 0 01-2.5 2.5H6.25a2.5 2.5 0 01-2.5-2.5v-5.75a.75.75 0 01.75-.75zm3.75 2a1 1 0 100 2 1 1 0 000-2zm3.75 0a1 1 0 100 2 1 1 0 000-2zm3.75 0a1 1 0 100 2 1 1 0 000-2z"/>
+</svg>`;
+
 async function fillShowCardMembers(s) {
   const cardId = `show-${s.id}`;
   const gridEl = document.getElementById(`grid-${cardId}`);
@@ -97,9 +105,9 @@ async function fillShowCardMembers(s) {
       const displayName = known?.nickname || m.name;
       const isBirthday = birthdayNames.includes(m.name.toLowerCase());
       return `
-        <div class="member-chip">
+        <div class="member-chip${isBirthday ? ' is-birthday' : ''}">
           ${photo ? `<img src="${photo}" alt="${escapeHtmlSC(m.name)}" loading="lazy" onerror="this.style.visibility='hidden'">` : ""}
-          <span>${escapeHtmlSC(displayName)}${isBirthday ? ' <i class="fa-solid fa-cake-candles" title="Ulang tahun saat show ini" style="color:#e0335f;"></i>' : ''}</span>
+          <span>${escapeHtmlSC(displayName)}${isBirthday ? BIRTHDAY_CAKE_SVG : ''}</span>
         </div>`;
     }).join("");
 

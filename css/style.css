@@ -260,9 +260,16 @@ button { font-family: inherit; cursor: pointer; }
 .show-card .datetime-row i { color: var(--red); }
 
 .member-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-.member-grid .member-chip { display: flex; align-items: center; gap: 6px; background: var(--bg); border-radius: 999px; padding: 4px 12px 4px 4px; }
+.member-grid .member-chip { display: flex; align-items: center; gap: 6px; background: var(--bg); border: 2px solid transparent; border-radius: 999px; padding: 4px 12px 4px 4px; transition: all .15s ease; }
 .member-grid .member-chip img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: var(--line); }
-.member-grid .member-chip span { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.member-grid .member-chip span { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+
+.member-grid .member-chip.is-birthday {
+  background: #fff0f6; border-color: #ff6b9d;
+  box-shadow: 0 0 0 3px rgba(255,107,157,0.14);
+}
+.member-grid .member-chip.is-birthday img { border: 2px solid #ff6b9d; }
+.birthday-cake-icon { width: 15px; height: 15px; flex-shrink: 0; color: #e0335f; }
 
 .show-status-row {
   background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px 14px;
