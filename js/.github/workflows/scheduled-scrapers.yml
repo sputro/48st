@@ -1,0 +1,34 @@
+name: Scheduled Scraper Runs
+
+# Karena dashboard Supabase kamu gak ada tombol Cron/Schedule (kemungkinan
+# terbatas di plan Free), jadwal otomatis dijalanin dari sini pakai GitHub
+# Actions — gratis, gak tergantung fitur Supabase apapun.
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"   # scrape-jkt48 (news): tiap 3 jam
+    - cron: "0 6 * * *"     # scrape-schedules: tiap hari jam 6 pagi UTC
+    - cron: "0 6 * * 1"     # scrape-members: tiap Senin jam 6 pagi UTC
+  workflow_dispatch: {}       # biar bisa di-trigger manual dari tab Actions juga
+
+jobs:
+  scrape-news:
+    if: github.event.schedule == '0 */3 * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call scrape-jkt48
+        run: curl -s -X POST "https://ddvfhsywpwgppdyvipul.supabase.co/functions/v1/scrape-jkt48"
+
+  scrape-schedules:
+    if: github.event.schedule == '0 6 * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call scrape-schedules (bulan lalu s/d 3 bulan ke depan)
+        run: curl -s -X POST "https://ddvfhsywpwgppdyvipul.supabase.co/functions/v1/scrape-schedules?monthsBack=1&monthsForward=3"
+
+  scrape-members:
+    if: github.event.schedule == '0 6 * * 1' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call scrape-members
+        run: curl -s -X POST "https://ddvfhsywpwgppdyvipul.supabase.co/functions/v1/scrape-members"

@@ -119,16 +119,10 @@ async function fillShowCardMembers(s) {
     return;
   }
 
-  // Fallback: API detail gagal/gak ada -> tampilin roster tim penuh (lebih baik daripada kosong).
-  if (!s.member_type) { gridEl.remove(); return; }
-  const members = await getTeamMembers(s.member_type);
-  if (members.length === 0) { gridEl.remove(); return; }
-
-  gridEl.innerHTML = members.map((m) => `
-    <div class="member-chip">
-      <img src="${m.photo_url}" alt="${escapeHtmlSC(m.name)}" loading="lazy" onerror="this.style.visibility='hidden'">
-      <span>${escapeHtmlSC(m.nickname || m.name)}</span>
-    </div>`).join("");
+  // Lineup belum diumumin jkt48.com buat show ini (mis. show tour yang belum
+  // rilis daftar member) -> biarin KOSONG, jangan asal nampilin roster tim.
+  // Ini sesuai perilaku situs resminya sendiri.
+  gridEl.remove();
 }
 
 // ---------- Countdown per-kartu, satu interval global buat semua kartu aktif ----------
