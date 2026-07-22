@@ -11,6 +11,10 @@
 
 function proxyImage(url) {
   if (!url) return url;
+  // Foto yang sudah kita mirror ke Supabase Storage sendiri (dari scrape-ex-members)
+  // gak butuh proxy sama sekali — itu udah domain kita sendiri, gak ada hotlink/CORS block.
+  // Cuma link jkt48.com asli yang perlu di-proxy.
+  if (url.includes(".supabase.co/storage/")) return url;
   return `https://images.weserv.nl/?url=${url}`;
 }
 
