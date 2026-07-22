@@ -7,7 +7,11 @@
 window.SHOW_LOGO_MAP = {
   "cara meminum ramune": "cmr.png",
   "menggandeng erat tanganku": "twt.png",
-  "pertaruhan cinta": "percintaan.png",
+  "pertaruhan cinta": "percin.png",
+  "kira-kira girls": "kkg.png",
+  "aturan anti cinta": "rkj.png",
+  "gadis gadis remaja": "ggr.png",
+  "tunas di balik seragam": "tbs.png",
   "love": "love.png",
   "dream": "dream.png",
   "pajama": "pajama.png",
