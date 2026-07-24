@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — 48ST</title>
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .adm-wrap { max-width: 640px; margin: 0 auto; padding: 20px; }
+  .adm-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow); padding: 22px; margin-bottom: 20px;
+  }
+  .adm-card h3 { margin: 0 0 14px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+  .adm-row { display: flex; gap: 8px; }
+  .adm-row input { flex: 1; padding: 11px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--line); font-size: 13.5px; }
+  .adm-row input:focus { border-color: var(--red); outline: none; }
+  .token-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px;
+  }
+  .token-item:last-child { border-bottom: none; }
+  .token-item .t-code { font-family: monospace; font-weight: 700; background: var(--red-light); color: var(--red); padding: 3px 8px; border-radius: 6px; }
+  .token-item button { background: none; border: none; color: #b3261e; font-size: 15px; }
+</style>
+</head>
+<body>
+
+<div class="lc-gate" id="admin-gate" style="position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div class="lc-gate-card" style="background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:32px 26px;max-width:380px;width:100%;text-align:center;">
+    <div class="logo" style="margin-bottom:10px;"><img src="/assets/logo.png" alt="48ST" style="height:36px;"></div>
+    <h2 style="margin-bottom:18px;">Admin Login</h2>
+    <div id="login-msg" class="form-msg"></div>
+    <div class="field" style="text-align:left;margin-bottom:12px;">
+      <label>Email</label>
+      <input type="email" id="admin-email" style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:14px;">
+    </div>
+    <div class="field" style="text-align:left;margin-bottom:12px;">
+      <label>Password</label>
+      <input type="password" id="admin-password" style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:14px;">
+    </div>
+    <button class="btn btn-primary btn-block" id="admin-login-btn"><i class="fa-solid fa-lock"></i> Masuk</button>
+  </div>
+</div>
+
+<div id="admin-content" style="display:none;">
+  <header class="topbar">
+    <div class="brand">
+      <img src="/assets/logo.png" alt="48ST" class="brand-logo">
+      <h1>48ST <span class="accent">Admin</span></h1>
+    </div>
+    <div class="actions">
+      <button class="btn btn-outline" id="logout-btn" style="padding:9px 18px;font-size:13px;">
+        <i class="fa-solid fa-right-from-bracket"></i> Keluar
+      </button>
+    </div>
+  </header>
+
+  <div class="adm-wrap">
+    <div class="adm-card">
+      <h3><i class="fa-solid fa-satellite-dish" style="color:var(--red);"></i> Link Live Stream (m3u8)</h3>
+      <div id="stream-msg" class="form-msg"></div>
+      <div class="adm-row">
+        <input type="text" id="stream-url-input" placeholder="https://.../playlist.m3u8">
+        <button class="btn btn-primary" id="save-stream-btn">Simpan</button>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;">
+        Ini otomatis diputar semua viewer di <code>live-custom.html</code> begitu disimpan.
+      </p>
+    </div>
+
+    <div class="adm-card">
+      <h3><i class="fa-solid fa-key" style="color:var(--red);"></i> Kelola Token Akses</h3>
+      <div id="token-msg" class="form-msg"></div>
+      <div class="adm-row" style="margin-bottom:16px;">
+        <input type="text" id="new-token-code" placeholder="Kode token" style="flex:1;">
+        <input type="text" id="new-token-label" placeholder="Label (opsional)" style="flex:1;">
+        <button class="btn btn-primary" id="add-token-btn"><i class="fa-solid fa-plus"></i></button>
+      </div>
+      <div id="token-list"><div class="skeleton" style="height:40px;"></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/admin-live-panel.js"></script>
+</body>
+</html>

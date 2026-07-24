@@ -99,12 +99,28 @@ function playM3u8(url) {
 }
 
 function initPlayer() {
-  document.getElementById("url-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const url = document.getElementById("m3u8-input").value.trim();
-    if (!url) return;
-    playM3u8(url);
-  });
+  loadCurrentStream();
+
+  // Kalau admin ganti link pas ada yang lagi nonton, otomatis ke-update.
+  sb.channel("stream-config-updates")
+    .on("postgres_changes", { event: "UPDATE", schema: "public", table: "stream_config" }, (payload) => {
+      const newUrl = payload.new?.m3u8_url;
+      if (newUrl) playM3u8(newUrl);
+    })
+    .subscribe();
+}
+
+async function loadCurrentStream() {
+  const statusEl = document.getElementById("stream-status");
+  const { data, error } = await sb.from("stream_config").select("m3u8_url").eq("id", 1).single();
+
+  if (error || !data?.m3u8_url) {
+    statusEl.textContent = "Belum ada live stream yang di-set admin.";
+    return;
+  }
+
+  statusEl.textContent = "";
+  playM3u8(data.m3u8_url);
 }
 
 // ============================================================
