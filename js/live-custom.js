@@ -28,6 +28,7 @@ function unlockPage() {
   initPlayer();
   initChat();
   initFeedback();
+  initViewerCount();
 }
 
 document.getElementById("token-submit").addEventListener("click", async () => {
@@ -196,7 +197,7 @@ function initFeedback() {
   const textEl = document.getElementById("fb-btn-text");
   let nagIndex = 0;
 
-  setTimeout(() => { btn.style.display = "flex"; }, 8000); // muncul setelah 8 detik nonton
+  btn.style.display = "flex"; // langsung muncul dari awal, gak nunggu delay
 
   setInterval(() => {
     nagIndex = (nagIndex + 1) % NAG_MESSAGES.length;
@@ -235,8 +236,29 @@ function openFeedbackModal() {
       <p>Makasih! Feedback kamu udah kekirim.</p>
     </div>`;
     setTimeout(() => overlay.remove(), 1500);
-    document.getElementById("fb-open-btn").style.display = "none";
   });
+}
+
+// ============================================================
+// 6. HITUNG PENONTON (real-time, pakai Supabase Presence)
+// ============================================================
+function initViewerCount() {
+  const myId = Math.random().toString(36).slice(2);
+  const channel = sb.channel("live-viewers", {
+    config: { presence: { key: myId } },
+  });
+
+  channel
+    .on("presence", { event: "sync" }, () => {
+      const state = channel.presenceState();
+      const count = Object.keys(state).length;
+      document.getElementById("viewer-count").textContent = count;
+    })
+    .subscribe(async (status) => {
+      if (status === "SUBSCRIBED") {
+        await channel.track({ online_at: new Date().toISOString() });
+      }
+    });
 }
 
 // ============================================================
