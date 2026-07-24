@@ -15,7 +15,8 @@ async function checkAdminSession() {
   // (RPC-nya sendiri yang ngecek role, bukan cuma UI).
   const { error } = await sb.rpc("admin_list_watch_tokens");
   if (error) {
-    showMsg("login-msg", "Akun ini bukan admin.", "error");
+    console.error("Admin check failed:", error);
+    showMsg("login-msg", "Gagal: " + error.message, "error");
     await sb.auth.signOut();
     document.getElementById("admin-gate").style.display = "flex";
     return;
