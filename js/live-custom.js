@@ -213,7 +213,7 @@ function openFeedbackModal() {
   overlay.innerHTML = `
     <div class="fb-modal">
       <h3 style="margin:0 0 4px;"><i class="fa-solid fa-comment-dots" style="color:var(--red);"></i> Kasih Feedback</h3>
-      <p style="font-size:13px;color:var(--muted);margin:0 0 8px;">Anonim, gak perlu login. Jujur aja gapapa.</p>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 8px;">Feedback anda sangat berharga bagi kami, Terima kasih!</p>
       <textarea id="fb-text" placeholder="Tulis unek-unek kamu di sini..."></textarea>
       <div style="display:flex;gap:10px;">
         <button class="btn btn-outline" id="fb-cancel" style="flex:1;">Nanti Aja</button>
